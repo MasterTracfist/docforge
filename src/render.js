@@ -237,16 +237,23 @@ function matchScreensToSections(screens, book) {
   return map;
 }
 
+// Screen-by-screen walkthrough: every captured page under its own heading with a full-width
+// screenshot — labelled by the page it actually is (from capture), so it's correct by construction.
 function renderProductScreens(screens, book, cfg, gen, outDir) {
   const groups = {};
   for (const s of screens) (groups[s.name] ||= []).push(s);
   let inner = `<header class="doc-head"><h1>Product Screens</h1><p class="aud">End users & operators</p>` +
-    `<p class="blurb">Live UI screenshots captured headlessly from the running apps via the DevTools Protocol.</p></header>`;
+    `<p class="blurb">A screen-by-screen walkthrough of the live product — ${screens.length} pages captured headlessly from the running apps. Click any image for full size.</p></header>`;
+  // Jump-to nav across the captured apps.
+  inner += `<nav class="toc"><strong>On this page</strong><ul>` +
+    Object.entries(groups).map(([app, shots]) => `<li><a href="#${slug(app)}">${app} <small>${shots.length} screens</small></a></li>`).join('') +
+    `</ul></nav>`;
   for (const [app, shots] of Object.entries(groups)) {
-    inner += `<section class="section"><h2>${app}</h2><div class="gallery screens">`;
+    inner += `<section class="section" id="${slug(app)}"><h2>${app}</h2><div class="screenwalk">`;
     for (const s of shots) {
-      inner += `<figure><a href="${s.file}" target="_blank"><img loading="lazy" src="${s.file}" alt="${app} — ${s.label}"></a>` +
-        `<figcaption>${s.label}<small>${s.url} · ${s.width}×${s.height}</small></figcaption></figure>`;
+      inner += `<figure class="shot"><h3 id="${slug(app + '-' + s.label)}">${s.label}</h3>` +
+        `<a href="${s.file}" target="_blank"><img loading="lazy" src="${s.file}" alt="${app} — ${s.label}"></a>` +
+        `<figcaption>${s.url || ''}${s.width ? ` · ${s.width}×${s.height}` : ''}</figcaption></figure>`;
     }
     inner += `</div></section>`;
   }
