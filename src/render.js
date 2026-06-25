@@ -100,6 +100,10 @@ export function render(book, cfg, gen) {
   // style
   fs.copyFileSync(path.join(__dirname, '..', 'assets', 'style.css'), path.join(outDir, 'assets', 'style.css'));
 
+  // Best-effort: attach each captured screen to the section it best matches, for inline embedding.
+  const screenMatches = (SCREENS.length && cfg.embedScreens !== false)
+    ? matchScreensToSections(SCREENS, book) : new Map();
+
   // Per-document pages
   for (const doc of book.documents) {
     let inner = `<header class="doc-head"><h1>${doc.title}</h1><p class="aud">${doc.audience}</p><p class="blurb">${doc.blurb || ''}</p></header>`;
@@ -109,9 +113,17 @@ export function render(book, cfg, gen) {
     for (const s of doc.sections) {
       const rv = s._review || {};
       const badge = rv.status ? `<span class="badge ${rv.status}">${rv.status}${rv.wc != null ? ` · ${rv.wc}w` : ''}</span>` : '';
-      inner += `<section class="section" id="${slug(s.repo + '-' + s.title)}">` +
+      const secId = slug(s.repo + '-' + s.title);
+      const shots = screenMatches.get(secId) || [];
+      const shotHtml = shots.length
+        ? `<div class="gallery screens inline">` + shots.map(sc =>
+            `<figure><a href="${sc.file}" target="_blank"><img loading="lazy" src="${sc.file}" alt="${sc.label}"></a>` +
+            `<figcaption>${sc.label}<small>${sc.url || ''}</small></figcaption></figure>`).join('') + `</div>`
+        : '';
+      inner += `<section class="section" id="${secId}">` +
         `<h2>${s.title} ${badge}</h2>` +
         `<p class="src">Source: <code>${s.repo}/${s.rel}</code></p>` +
+        shotHtml +
         renderSection(s, imgMap) + `</section>`;
     }
     fs.writeFileSync(path.join(outDir, `${doc.id}.html`),
@@ -188,6 +200,36 @@ function renderGeneratedDoc(gen, book, cfg, outDir) {
 
 // Build the "Product Screens" page from screenshots captured by `docforge capture`,
 // grouped by app, each a real rendered UI screen of the running product.
+// Tokenise a title/label into meaningful, singular, lower-case words for matching.
+const SCREEN_STOP = new Set(['guide', 'manual', 'feature', 'page', 'overview', 'reference',
+  'home', 'the', 'and', 'for', 'view', 'list', 'setup', 'new', 'old', 'all', 'dashboard']);
+function screenTokens(s) {
+  return [...new Set(String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ')
+    .map(t => t.replace(/s$/, '')).filter(t => t.length >= 3 && !SCREEN_STOP.has(t)))];
+}
+
+// Map each screen to the doc section whose title shares the most tokens with the screen's label.
+// Returns Map<sectionSlug, screen[]>. Screens with no shared token stay gallery-only.
+function matchScreensToSections(screens, book) {
+  const sections = [];
+  for (const doc of book.documents) for (const s of doc.sections)
+    sections.push({ slug: slug(s.repo + '-' + s.title), toks: screenTokens(s.title) });
+  const map = new Map();
+  for (const sc of screens) {
+    const stoks = screenTokens(sc.label);
+    let best = null, bestScore = 0;
+    for (const sec of sections) {
+      const score = sec.toks.filter(t => stoks.includes(t)).length;
+      if (score > bestScore) { bestScore = score; best = sec; }
+    }
+    if (best && bestScore >= 1) {
+      if (!map.has(best.slug)) map.set(best.slug, []);
+      map.get(best.slug).push(sc);
+    }
+  }
+  return map;
+}
+
 function renderProductScreens(screens, book, cfg, gen, outDir) {
   const groups = {};
   for (const s of screens) (groups[s.name] ||= []).push(s);

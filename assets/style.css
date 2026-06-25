@@ -65,6 +65,9 @@ table.stats.wide td { padding: 7px 16px 7px 0; }
 .gallery img { width: 100%; display: block; }
 .gallery figcaption { padding: 8px 10px; font-size: 12px; }
 .gallery figcaption small { display: block; color: var(--muted); }
+/* Screens embedded inline within a doc section — smaller tiles, sits in the prose flow. */
+.gallery.screens.inline { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 8px 0 20px; }
+.gallery.screens.inline figcaption { font-size: 11.5px; }
 
 /* Review status */
 .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; vertical-align: middle;
