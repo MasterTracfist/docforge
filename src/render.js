@@ -100,8 +100,11 @@ export function render(book, cfg, gen) {
   // style
   fs.copyFileSync(path.join(__dirname, '..', 'assets', 'style.css'), path.join(outDir, 'assets', 'style.css'));
 
-  // Best-effort: attach each captured screen to the section it best matches, for inline embedding.
-  const screenMatches = (SCREENS.length && cfg.embedScreens !== false)
+  // Optional, opt-in: attach a captured screen to a doc section by title match, for inline embedding.
+  // OFF by default — crude title matching collides on generic words (e.g. a "Temperature monitoring"
+  // screen landing under an infra "Monitoring & Observability" section), so it's only on when a
+  // config explicitly sets embedScreens:true. Screens always appear in the Product Screens gallery.
+  const screenMatches = (SCREENS.length && cfg.embedScreens === true)
     ? matchScreensToSections(SCREENS, book) : new Map();
 
   // Per-document pages
@@ -202,7 +205,11 @@ function renderGeneratedDoc(gen, book, cfg, outDir) {
 // grouped by app, each a real rendered UI screen of the running product.
 // Tokenise a title/label into meaningful, singular, lower-case words for matching.
 const SCREEN_STOP = new Set(['guide', 'manual', 'feature', 'page', 'overview', 'reference',
-  'home', 'the', 'and', 'for', 'view', 'list', 'setup', 'new', 'old', 'all', 'dashboard']);
+  'home', 'the', 'and', 'for', 'view', 'list', 'setup', 'new', 'old', 'all', 'dashboard',
+  // generic infra/dev words that collide across unrelated UI pages and docs
+  'monitoring', 'observability', 'integration', 'management', 'platform', 'system', 'service',
+  'configuration', 'config', 'deployment', 'performance', 'analytics', 'processing', 'automation',
+  'data', 'api', 'web', 'app', 'mobile', 'security', 'testing', 'architecture']);
 function screenTokens(s) {
   return [...new Set(String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ')
     .map(t => t.replace(/s$/, '')).filter(t => t.length >= 3 && !SCREEN_STOP.has(t)))];
