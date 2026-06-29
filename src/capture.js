@@ -45,7 +45,7 @@ function parseHostPort(url) {
 }
 
 async function launchChrome(port) {
-  const userDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docforge-chrome-'));
+  const userDir = fs.mkdtempSync(path.join(os.tmpdir(), 'doc-chrome-'));
   const args = ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run',
     '--no-default-browser-check', '--disable-extensions', '--mute-audio',
     `--remote-debugging-port=${port}`, '--remote-allow-origins=*',
@@ -207,7 +207,7 @@ export async function captureScreens(cfg, opts = {}) {
   } else {
     targets = sc.targets || [];
   }
-  if (!targets.length) { console.log('  (no screen targets configured; set screens.targets in docforge.config.json)'); return []; }
+  if (!targets.length) { console.log('  (no screen targets configured; set screens.targets in doc.config.json)'); return []; }
 
   const outImgDir = path.join(cfg.output, 'assets', 'screens');
   fs.mkdirSync(outImgDir, { recursive: true });

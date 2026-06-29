@@ -53,7 +53,7 @@ function shell(title, subtitle, nav, content) {
 <aside class="sidebar">
   <div class="brand"><strong>${subtitle.split('—')[0] || title}</strong><span>${subtitle}</span></div>
   <nav>${nav}</nav>
-  <div class="built">Built by DocForge</div>
+  <div class="built">Built by Doc</div>
 </aside>
 <main class="content">${content}</main>
 </body></html>`;
@@ -84,7 +84,7 @@ export function render(book, cfg, gen) {
   fs.mkdirSync(outDir, { recursive: true });
   const imgMap = copyImages(book, outDir);
 
-  // Fold in product screens captured by `docforge capture` (if any).
+  // Fold in product screens captured by `doc capture` (if any).
   SCREENS = [];
   try { SCREENS = JSON.parse(fs.readFileSync(path.join(outDir, 'screens.json'), 'utf8')); } catch { /* none */ }
 
@@ -151,7 +151,7 @@ export function render(book, cfg, gen) {
     Object.entries(s.byRepo).sort((a, b) => b[1] - a[1]).map(([r, c]) => `<tr><td>${r}</td><td>${c} docs</td></tr>`).join('') +
     `</tbody></table>`;
   if (book.emptyDocs.length) {
-    home += `<h2>Gaps</h2><p class="gap">No content matched: ${book.emptyDocs.join(', ')}. Add docs or adjust matchers in <code>docforge.config.json</code>.</p>`;
+    home += `<h2>Gaps</h2><p class="gap">No content matched: ${book.emptyDocs.join(', ')}. Add docs or adjust matchers in <code>doc.config.json</code>.</p>`;
   }
   fs.writeFileSync(path.join(outDir, 'index.html'),
     shell(cfg.title, cfg.subtitle, navHtml(book, 'index', gen), home));
@@ -201,7 +201,7 @@ function renderGeneratedDoc(gen, book, cfg, outDir) {
     shell(`${gen.doc.title} — ${cfg.title}`, cfg.subtitle, navHtml(book, gen.doc.id, gen), inner));
 }
 
-// Build the "Product Screens" page from screenshots captured by `docforge capture`,
+// Build the "Product Screens" page from screenshots captured by `doc capture`,
 // grouped by app, each a real rendered UI screen of the running product.
 // Tokenise a title/label into meaningful, singular, lower-case words for matching.
 const SCREEN_STOP = new Set(['guide', 'manual', 'feature', 'page', 'overview', 'reference',
@@ -305,7 +305,7 @@ function renderReview(rv, book, cfg, gen, outDir) {
   if (rv.gapCount === 0) inner += `<p class="gap">No gaps detected — every section is complete and every feature is documented. Ready for sign-off.</p>`;
 
   // Persist reviewer ticks locally so progress survives reloads.
-  inner += `<script>(function(){var K='docforge-review-'+location.pathname;var st=JSON.parse(localStorage.getItem(K)||'{}');
+  inner += `<script>(function(){var K='doc-review-'+location.pathname;var st=JSON.parse(localStorage.getItem(K)||'{}');
     document.querySelectorAll('.checklist input').forEach(function(cb,i){cb.checked=!!st[i];cb.addEventListener('change',function(){st[i]=cb.checked;localStorage.setItem(K,JSON.stringify(st));cb.closest('li').classList.toggle('done',cb.checked);});if(cb.checked)cb.closest('li').classList.add('done');});})();</script>`;
 
   fs.writeFileSync(path.join(outDir, 'review.html'),

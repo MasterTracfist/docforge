@@ -1,4 +1,4 @@
-# DocForge
+# Doc
 
 Point it at **any technical project** and it builds review-ready documentation: it crawls the repos
 for Markdown, classifies it by audience, **generates** architecture/data-model/pipeline diagrams from
@@ -41,7 +41,7 @@ node src/index.js build --min-coverage=85 --max-gaps=40   # …and cap total rev
 The gate is off for a plain `build` unless one of these flags is set (or a `gate` block is present in
 config). It prints a `GATE PASSED` / `GATE FAILED` verdict listing every offending threshold and each
 broken link with its source file, then exits `0` (pass) or `1` (fail). Defaults can live in
-`docforge.config.json` and are overridden by CLI flags:
+`doc.config.json` and are overridden by CLI flags:
 
 ```json
 "gate": { "minCoverage": 85, "maxBroken": 0, "maxGaps": 40 }
@@ -49,7 +49,7 @@ broken link with its source file, then exits `0` (pass) or `1` (fail). Defaults 
 
 ### Enforcing it
 
-**Self-test** — DocForge gates its own bundled sample corpus on every push via
+**Self-test** — Doc gates its own bundled sample corpus on every push via
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
 
 ```bash
@@ -65,11 +65,11 @@ sh ci/install-hook.sh /path/to/your/repo
 ```
 
 Each push from a hooked repo rebuilds the manual and aborts on failure; bypass once with
-`git push --no-verify`. Configure via `DOCFORGE_DIR`, `DOCFORGE_CONFIG`, `DOCFORGE_MIN_COVERAGE`,
-and `DOCFORGE_MAX_BROKEN` (see [`ci/pre-push`](ci/pre-push)).
+`git push --no-verify`. Configure via `DOC_DIR`, `DOC_CONFIG`, `DOC_MIN_COVERAGE`,
+and `DOC_MAX_BROKEN` (see [`ci/pre-push`](ci/pre-push)).
 
 **GitHub Actions in your project** — run the gate in the repo(s) you document. Check the corpus out,
-then run DocForge (e.g. `npx github:<org>/docforge build --config=<your-config> --min-coverage=85`).
+then run Doc (e.g. `npx github:<org>/doc build --config=<your-config> --min-coverage=85`).
 For a multi-repo manual the pattern is: one
 `actions/checkout` per documented repo into `corpus/<name>`, a config with relative `corpus/*` roots,
 then the gated build. A missing root is skipped with a warning, so partial corpora still gate.
@@ -84,7 +84,7 @@ node src/index.js serve     # preview the built manual at http://localhost:4800
 `init` scans a base directory, auto-detects each repo's framework (React / Next / Vue / Spring / Go /
 Rust / C / Node…), asks which to include, asks for hosted addresses + whether pages need login (and
 which **env vars** hold the credentials — never the secrets themselves), then writes a ready-to-run
-`docforge.config.json` and offers to build + capture. Existing configs are backed up to `.bak`.
+`doc.config.json` and offers to build + capture. Existing configs are backed up to `.bak`.
 
 ## Manual commands
 
@@ -95,7 +95,7 @@ node src/index.js capture                  # screenshot the hosted apps (see Ima
 node src/index.js serve --port=4800        # build (if needed) + serve the site
 ```
 
-Output goes to the `output` path in `docforge.config.json`.
+Output goes to the `output` path in `doc.config.json`.
 
 ## Pipeline
 
@@ -112,13 +112,13 @@ Output goes to the `output` path in `docforge.config.json`.
 
 ## Configuration
 
-Everything lives in `docforge.config.json`: `roots`, `ignore`, `documents` (id/title/audience/match
+Everything lives in `doc.config.json`: `roots`, `ignore`, `documents` (id/title/audience/match
 keywords), `fallbackDocument`, and `sectionOrder`. Add a document by adding an entry to `documents`
 with `match` keywords; re-run `build`.
 
 ## Image generation
 
-DocForge **creates** images, not just harvests them — from two independent sources:
+Doc **creates** images, not just harvests them — from two independent sources:
 
 1. **Generated diagrams** (always, in the default `build`): architecture, telemetry pipeline, and
    data model, synthesized from the code/stack (see GENERATE above).
@@ -170,7 +170,7 @@ vars aren't set, that target silently falls back to public-page capture.
 
 ### Route auto-discovery + SPA navigation
 
-Rather than hand-list pages, give a target a `sourceRepo` and DocForge reads its React Router
+Rather than hand-list pages, give a target a `sourceRepo` and Doc reads its React Router
 definitions ([routes.js](src/routes.js)) and captures **every** page (skipping `:param` routes,
 wildcards, and auth/utility paths; `excludeRoutes`/`maxRoutes` to trim). A typical SPA expands to a
 few dozen routes this way.

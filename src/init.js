@@ -1,5 +1,5 @@
 // INIT — interactive wizard that onboards ANY technical project: detect repos + frameworks,
-// ask for hosted addresses + auth, and write a ready-to-run docforge.config.json. Zero deps.
+// ask for hosted addresses + auth, and write a ready-to-run doc.config.json. Zero deps.
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
@@ -71,7 +71,7 @@ export async function runWizard(defaultConfigPath) {
     return a ? a.startsWith('y') : def;
   };
 
-  console.log('\n┌─ DocForge setup ─────────────────────────────────────────────┐');
+  console.log('\n┌─ Doc setup ─────────────────────────────────────────────┐');
   console.log('│ Point me at a project and answer a few questions; I write the │');
   console.log('│ config and can build the manual + capture live screens.       │');
   console.log('└───────────────────────────────────────────────────────────────┘\n');

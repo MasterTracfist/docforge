@@ -1,12 +1,12 @@
 #!/bin/sh
-# Install the DocForge docs-gate pre-push hook into one or more git repos.
+# Install the Doc docs-gate pre-push hook into one or more git repos.
 #
 # Usage:
 #   ci/install-hook.sh <repo-path> [<repo-path> ...]
 #
 # After install, `git push` from any of those repos rebuilds the manual and blocks the push if the
 # documentation quality gate fails. Point the hook at your config and thresholds with the
-# DOCFORGE_DIR / DOCFORGE_CONFIG / DOCFORGE_MIN_COVERAGE / DOCFORGE_MAX_BROKEN env vars (see ci/pre-push).
+# DOC_DIR / DOC_CONFIG / DOC_MIN_COVERAGE / DOC_MAX_BROKEN env vars (see ci/pre-push).
 # Bypass a single push with `git push --no-verify`.
 
 set -e

@@ -1,31 +1,31 @@
 #!/bin/sh
-# DocForge documentation quality gate — runs before every `git push`.
+# Doc documentation quality gate — runs before every `git push`.
 # Rebuilds the manual and blocks the push if coverage drops below the floor or any broken relative
 # link appears. Installed by ci/install-hook.sh.
 #
 # Configure via env (set these in the hook, your shell profile, or a repo-local wrapper):
-#   DOCFORGE_DIR           path to the docforge checkout            (default: $HOME/Desktop/docforge)
-#   DOCFORGE_CONFIG        path to the config to build              (default: $DOCFORGE_DIR/docforge.config.json)
-#   DOCFORGE_MIN_COVERAGE  coverage % floor                         (default: 85)
-#   DOCFORGE_MAX_BROKEN    broken links allowed                     (default: 0)
-DOCFORGE_DIR="${DOCFORGE_DIR:-$HOME/Desktop/docforge}"
-DOCFORGE_CONFIG="${DOCFORGE_CONFIG:-$DOCFORGE_DIR/docforge.config.json}"
-MIN_COVERAGE="${DOCFORGE_MIN_COVERAGE:-85}"
-MAX_BROKEN="${DOCFORGE_MAX_BROKEN:-0}"
+#   DOC_DIR           path to the doc checkout            (default: $HOME/Desktop/Doc)
+#   DOC_CONFIG        path to the config to build              (default: $DOC_DIR/doc.config.json)
+#   DOC_MIN_COVERAGE  coverage % floor                         (default: 85)
+#   DOC_MAX_BROKEN    broken links allowed                     (default: 0)
+DOC_DIR="${DOC_DIR:-$HOME/Desktop/Doc}"
+DOC_CONFIG="${DOC_CONFIG:-$DOC_DIR/doc.config.json}"
+MIN_COVERAGE="${DOC_MIN_COVERAGE:-85}"
+MAX_BROKEN="${DOC_MAX_BROKEN:-0}"
 
-if [ ! -f "$DOCFORGE_DIR/src/index.js" ]; then
-  echo "docforge not found at $DOCFORGE_DIR — set DOCFORGE_DIR. Skipping docs gate." >&2
+if [ ! -f "$DOC_DIR/src/index.js" ]; then
+  echo "doc not found at $DOC_DIR — set DOC_DIR. Skipping docs gate." >&2
   exit 0
 fi
 
-echo "Running DocForge docs quality gate (coverage >= ${MIN_COVERAGE}%, broken links <= ${MAX_BROKEN})…"
-node "$DOCFORGE_DIR/src/index.js" build \
-  --config="$DOCFORGE_CONFIG" \
+echo "Running Doc docs quality gate (coverage >= ${MIN_COVERAGE}%, broken links <= ${MAX_BROKEN})…"
+node "$DOC_DIR/src/index.js" build \
+  --config="$DOC_CONFIG" \
   --min-coverage="$MIN_COVERAGE" --max-broken="$MAX_BROKEN"
 status=$?
 
 if [ "$status" -ne 0 ]; then
   echo "" >&2
-  echo "✗ Push blocked by the DocForge docs gate. Fix the gaps above, or bypass once with: git push --no-verify" >&2
+  echo "✗ Push blocked by the Doc docs gate. Fix the gaps above, or bypass once with: git push --no-verify" >&2
 fi
 exit "$status"

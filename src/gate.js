@@ -1,4 +1,4 @@
-// GATE — turn the review analysis into a pass/fail CI check. `docforge build --min-coverage=85`
+// GATE — turn the review analysis into a pass/fail CI check. `doc build --min-coverage=85`
 // exits non-zero when coverage drops below the floor or broken links appear, so the manual can be
 // guarded as a documentation-quality check in CI alongside lint/test.
 //

@@ -1,16 +1,16 @@
 {
-  "name": "docforge",
+  "name": "doc",
   "version": "0.1.0",
   "description": "Repository -> Manual builder. Crawls repos for Markdown + screens + other material and renders a complete user guide and technical manual.",
   "license": "MIT",
   "author": "Sean Bowen",
   "type": "module",
   "bin": {
-    "docforge": "src/index.js"
+    "doc": "src/index.js"
   },
   "scripts": {
-    "demo": "node src/index.js build --config=examples/docforge.config.json",
-    "test": "node src/index.js build --config=examples/docforge.config.json --min-coverage=70 --max-broken=0"
+    "demo": "node src/index.js build --config=examples/doc.config.json",
+    "test": "node src/index.js build --config=examples/doc.config.json --min-coverage=70 --max-broken=0"
   },
   "dependencies": {
     "marked": "^12.0.0"

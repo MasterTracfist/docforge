@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// DocForge CLI — discover -> classify -> assemble -> render a complete manual from a repo corpus.
+// Doc CLI — discover -> classify -> assemble -> render a complete manual from a repo corpus.
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
@@ -16,13 +16,13 @@ import { evaluateGate, reportGate } from './gate.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function loadConfig(p) {
-  const file = p || path.join(__dirname, '..', 'docforge.config.json');
+  const file = p || path.join(__dirname, '..', 'doc.config.json');
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
 function build(cfg) {
   const t0 = Date.now();
-  console.log(`\nDocForge — building "${cfg.title}"`);
+  console.log(`\nDoc — building "${cfg.title}"`);
   console.log('  [1/4] discover…');
   const manifest = discover(cfg);
   console.log(`        ${manifest.length} artifacts across ${cfg.roots.length} roots`);
@@ -40,7 +40,7 @@ function build(cfg) {
   for (const d of book.documents) console.log(`     • ${d.title}: ${d.sections.length} sections`);
   if (book.orphanImages.length) console.log(`     • Screens & Media: ${book.orphanImages.length} orphan images`);
   if (book.emptyDocs.length) console.log(`     ! gaps: ${book.emptyDocs.join(', ')}`);
-  console.log(`\n  Preview:  npx docforge serve   (or open ${path.join(outDir, 'index.html')})\n`);
+  console.log(`\n  Preview:  npx doc serve   (or open ${path.join(outDir, 'index.html')})\n`);
   return { outDir, review };
 }
 
@@ -74,19 +74,19 @@ function serve(cfg, port = 4800) {
     }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
     fs.createReadStream(file).pipe(res);
-  }).listen(port, () => console.log(`DocForge serving ${root} → http://localhost:${port}`));
+  }).listen(port, () => console.log(`Doc serving ${root} → http://localhost:${port}`));
 }
 
 const cmd = process.argv[2] || 'build';
 const flag = (k) => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.split('=')[1] : undefined; };
-const configPath = flag('config') || path.join(__dirname, '..', 'docforge.config.json');
+const configPath = flag('config') || path.join(__dirname, '..', 'doc.config.json');
 
 // `init` is interactive and writes the config, so it must run before any config load.
 if (cmd === 'init') {
   const res = await runWizard(configPath);
   if (res?.buildNow) build(res.config);
   if (res?.captureNow) {
-    console.log('\nDocForge — capturing product screens via headless Chrome…');
+    console.log('\nDoc — capturing product screens via headless Chrome…');
     const shots = await captureScreens(res.config, {});
     if (shots.length) build(res.config); // fold screens into the manual
   }
@@ -108,7 +108,7 @@ if (cmd === 'build') {
 } else if (cmd === 'serve') {
   serve(cfg, flag('port') ? Number(flag('port')) : 4800);
 } else if (cmd === 'capture') {
-  console.log('\nDocForge — capturing product screens via headless Chrome…');
+  console.log('\nDoc — capturing product screens via headless Chrome…');
   fs.mkdirSync(cfg.output, { recursive: true });
   const shots = await captureScreens(cfg, {
     url: flag('url'), name: flag('name'), label: flag('label'),

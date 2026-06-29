@@ -1,6 +1,6 @@
 name: CI
 
-# Self-test for the DocForge engine: build the bundled sample corpus (examples/) and run the
+# Self-test for the Doc engine: build the bundled sample corpus (examples/) and run the
 # documentation quality gate against it. Uses no external data, so it proves the pipeline —
 # discover → classify → assemble → generate → render → gate — works on every push and PR.
 
@@ -19,4 +19,4 @@ jobs:
           node-version: 20
       - run: npm ci || npm install
       - name: Build sample manual + enforce gate
-        run: node src/index.js build --config=examples/docforge.config.json --min-coverage=70 --max-broken=0
+        run: node src/index.js build --config=examples/doc.config.json --min-coverage=70 --max-broken=0

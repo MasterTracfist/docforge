@@ -1,7 +1,7 @@
 # Notes API
 
 A small REST service for creating, organising, and searching personal notes. It is intentionally
-simple — it exists as a sample corpus so DocForge has a real project to build a manual from and to
+simple — it exists as a sample corpus so Doc has a real project to build a manual from and to
 exercise the documentation quality gate in CI.
 
 ## Overview

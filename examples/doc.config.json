@@ -1,7 +1,7 @@
 {
-  "_comment": "Sample DocForge config used by the self-test CI and as a starting template. Roots and output are relative to the repo root (where you run `node src/index.js`). Copy this, point `roots` at your own repos, and adjust the `documents` match rules.",
+  "_comment": "Sample Doc config used by the self-test CI and as a starting template. Roots and output are relative to the repo root (where you run `node src/index.js`). Copy this, point `roots` at your own repos, and adjust the `documents` match rules.",
   "title": "Notes API Manual",
-  "subtitle": "Sample manual built by DocForge",
+  "subtitle": "Sample manual built by Doc",
   "output": "./examples/_manual",
   "roots": [
     "examples/corpus/notes-api"
