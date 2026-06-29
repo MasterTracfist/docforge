@@ -120,7 +120,7 @@ if (cmd === 'build') {
 } else if (cmd === 'enrich') {
   // Opt-in authoring aid: draft cited prose for the review gaps via Clara. Never part of build/gate.
   await enrich(cfg, {
-    brain: flag('brain') || process.env.DOC_CLARA_BRAIN || 'tracfist-gps-tracking-solution',
+    brain: flag('brain') || process.env.DOC_CLARA_BRAIN || 'tracfist-engineering',
     claraUrl: process.env.CLARA_URL || 'http://127.0.0.1:4600',
     learn: process.argv.includes('--learn'),
     dryRun: process.argv.includes('--dry-run'),
