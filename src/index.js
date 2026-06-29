@@ -12,6 +12,7 @@ import { render } from './render.js';
 import { captureScreens } from './capture.js';
 import { runWizard } from './init.js';
 import { evaluateGate, reportGate } from './gate.js';
+import { enrich } from './enrich.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -116,4 +117,13 @@ if (cmd === 'build') {
   });
   console.log(`\n  ✓ captured ${shots.length} screen(s) → ${path.join(cfg.output, 'assets', 'screens')}`);
   console.log(`  Run "node src/index.js build" to fold them into the manual (Product Screens page).\n`);
-} else { console.error(`Unknown command: ${cmd}. Use "init", "build", "capture", or "serve".`); process.exit(1); }
+} else if (cmd === 'enrich') {
+  // Opt-in authoring aid: draft cited prose for the review gaps via Clara. Never part of build/gate.
+  await enrich(cfg, {
+    brain: flag('brain') || process.env.DOC_CLARA_BRAIN || 'tracfist-gps-tracking-solution',
+    claraUrl: process.env.CLARA_URL || 'http://127.0.0.1:4600',
+    learn: process.argv.includes('--learn'),
+    dryRun: process.argv.includes('--dry-run'),
+    max: Number(flag('max') || 25),
+  });
+} else { console.error(`Unknown command: ${cmd}. Use "init", "build", "capture", "serve", or "enrich".`); process.exit(1); }
